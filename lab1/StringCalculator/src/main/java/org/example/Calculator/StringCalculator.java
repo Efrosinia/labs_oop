@@ -39,7 +39,6 @@ public class StringCalculator {
         for (String num : numberArray) {
             if (num.isEmpty())
             {
-                //check right here
                 throw new IncorrectInput("you cannot enter mathematical expression: "+copynumbers.replace("\n", "\\n"));
 
             }
@@ -67,6 +66,10 @@ public class StringCalculator {
         for (String num : numberArray)
         {
             int numb = Integer.parseInt(num);
+            if(numb>1000)
+            {
+                numb=0;
+            }
             sum += numb;
         }
 
