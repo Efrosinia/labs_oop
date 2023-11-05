@@ -8,6 +8,7 @@ public class StringCalculator {
 
         String copynumbers=numbers;
         StringBuilder Incorchars= new StringBuilder();
+        StringBuilder NegativeNum= new StringBuilder();
         String delimiter="";
 
         if (numbers.isEmpty() )
@@ -23,10 +24,6 @@ public class StringCalculator {
             if (numbers.charAt(3)!='\n')
             {
                 throw new IncorrectInput("your expression does not match the pattern //[delimiter]\\n[numbers...].");
-            }
-            if (numbers.charAt(2)=='-')
-            {
-                throw new IncorrectInput("the delimiter cannot be a '-' (the pattern //[delimiter]\\n[numbers...]).");
             }
             delimiter=String.valueOf(numbers.charAt(2));
             numbers=numbers.substring(4);
@@ -50,25 +47,23 @@ public class StringCalculator {
             {
                 Incorchars.append(num.replaceAll("-?\\d+", ""));
             }
-
-            String [] isNumber = num.split("-");
-            int count=0;
-            for(String i: isNumber)
+            if (num.contains("-"))
             {
-                if(!Objects.equals(i, ""))
-                {
-                    count++;
-                }
-                if (count>1)
-                {
-                    throw new IncorrectInput("you cannot enter mathematical expression: "+num);
-                }
+                NegativeNum.append(num);
+                NegativeNum.append(" ");
             }
         }
+
+        if(!NegativeNum.isEmpty())
+        {
+            throw new IncorrectInput("input cannot contains negative numbers: "+NegativeNum);
+        }
+
         if (!Incorchars.isEmpty())
         {
             throw new IncorrectInput("input contains non-numeric characters: "+Incorchars);
         }
+
         for (String num : numberArray)
         {
             int numb = Integer.parseInt(num);
