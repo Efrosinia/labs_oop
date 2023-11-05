@@ -9,14 +9,17 @@ public class StringCalculator {
         if (numbers.isEmpty() ) {
             return 0;
         }
-
-        String[] numberArray = numbers.split(",");
+        if (numbers.contains("\n,") || numbers.contains(",\n"))
+        {
+            throw new IncorrectInput("you cannot enter mathematical expressions \\n, and ,\\n ");
+        }
+        String[] numberArray = numbers.split("[,\n]");
         int sum = 0;
 
         for (String num : numberArray) {
             if (num.isEmpty())
             {
-                throw new IncorrectInput("you cannot enter mathematical expression: "+numbers);
+                throw new IncorrectInput("you cannot enter mathematical expression: "+numbers.replace("\n", "\\n"));
             }
             if (!num.matches("-?\\d+") )
             {
