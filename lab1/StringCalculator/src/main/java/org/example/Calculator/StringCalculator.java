@@ -2,29 +2,55 @@ package org.example.Calculator;
 
 import java.util.Objects;
 
+import java.util.regex.Pattern;
 public class StringCalculator {
     public int add(String numbers) throws IncorrectInput {
-        StringBuilder Incorchars= new StringBuilder();
 
-        if (numbers.isEmpty() ) {
+        String copynumbers=numbers;
+        StringBuilder Incorchars= new StringBuilder();
+        String delimiter="";
+
+        if (numbers.isEmpty() )
+        {
             return 0;
+        }
+        if(numbers.charAt(0)=='/' && numbers.charAt(1)=='/')
+        {
+            if (Character.isDigit(numbers.charAt(2)))
+            {
+                throw new IncorrectInput("the delimiter cannot be a number: the pattern //[delimiter]\\n[numbers...].");
+            }
+            if (numbers.charAt(3)!='\n')
+            {
+                throw new IncorrectInput("your expression does not match the pattern //[delimiter]\\n[numbers...].");
+            }
+            if (numbers.charAt(2)=='-')
+            {
+                throw new IncorrectInput("the delimiter cannot be a '-' (the pattern //[delimiter]\\n[numbers...]).");
+            }
+            delimiter=String.valueOf(numbers.charAt(2));
+            numbers=numbers.substring(4);
         }
         if (numbers.contains("\n,") || numbers.contains(",\n"))
         {
             throw new IncorrectInput("you cannot enter mathematical expressions \\n, and ,\\n ");
         }
-        String[] numberArray = numbers.split("[,\n]");
+
+        String[] numberArray = numbers.split("[" + Pattern.quote(delimiter) + ",\n]");
         int sum = 0;
 
         for (String num : numberArray) {
             if (num.isEmpty())
             {
-                throw new IncorrectInput("you cannot enter mathematical expression: "+numbers.replace("\n", "\\n"));
+                //check right here
+                throw new IncorrectInput("you cannot enter mathematical expression: "+copynumbers.replace("\n", "\\n"));
+
             }
             if (!num.matches("-?\\d+") )
             {
                 Incorchars.append(num.replaceAll("-?\\d+", ""));
             }
+
             String [] isNumber = num.split("-");
             int count=0;
             for(String i: isNumber)
