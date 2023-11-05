@@ -3,6 +3,7 @@ package org.example.Calculator;
 import java.util.Objects;
 
 import java.util.regex.Pattern;
+import java.util.Arrays;
 public class StringCalculator {
     public int add(String numbers) throws IncorrectInput {
 
@@ -10,24 +11,11 @@ public class StringCalculator {
         StringBuilder Incorchars= new StringBuilder();
         StringBuilder NegativeNum= new StringBuilder();
         String delimiter="";
-        StringBuilder SpecDelimiter= new StringBuilder();
+        Boolean check=false;
+        String SpecDelimiter="";
 
-        if(numbers.length()>5 && numbers.charAt(0)=='/' && numbers.charAt(1)=='/' && numbers.charAt(2)=='[' && numbers.contains("]"))
-        {
-            for (int i = 2; i < numbers.length(); i++)
-            {
-                if(numbers.charAt(i)==']')
-                    break;
-                if(numbers.charAt(i+1)!=']')
-                {
-                    SpecDelimiter.append(numbers.charAt(i + 1));
-                }
-                if(Character.isDigit(numbers.charAt(i)))
-                {
-                    throw new IncorrectInput("you cannot enter a delimiter that contains numbers. ");
-                }
-            }
-        }
+
+        int count=0;
 
         if (numbers.isEmpty())
         {
@@ -35,16 +23,65 @@ public class StringCalculator {
         }
         if(numbers.charAt(0)=='/' && numbers.charAt(1)=='/')
         {
-            if ((Character.isDigit(numbers.charAt(2)) || numbers.charAt(3)!='\n') && numbers.charAt(2)!='[')
+            check=true;
+            if (Character.isDigit(numbers.charAt(2)))
             {
                 throw new IncorrectInput("your expression does not match the pattern //[delimiter]\\n[numbers...].");
             }
-            if(numbers.charAt(2)=='[' && numbers.charAt(3+SpecDelimiter.length())==']' && numbers.charAt(4+SpecDelimiter.length())=='\n')
+            if(numbers.charAt(2)=='[')
             {
-                numbers=numbers.substring(5+SpecDelimiter.length());
-                if(!SpecDelimiter.isEmpty()) {
-                    numbers = numbers.replaceAll(Pattern.quote(SpecDelimiter.toString()), ",");
+                for (int i = 2; i < numbers.length(); i++)
+                {
+                    if (numbers.charAt(i)=='[')
+                    {
+                        count++;
+                    }
+
+                    if(numbers.contains("]"))
+
+                    {
+                        if(numbers.charAt(i)=='\n')
+                            break;
+
+                        if(numbers.charAt(i)==']')
+                        {
+                            SpecDelimiter+=",";
+                        }
+                        if(numbers.charAt(i+1)!=']' && numbers.charAt(i+1)!='[')
+                        {
+                            SpecDelimiter+=numbers.charAt(i+1);
+                        }
+                        if (numbers.charAt(i)==']' && numbers.charAt(i+1)!='[' && !Character.isDigit(numbers.charAt(i+2)))
+                        {
+                            throw new IncorrectInput("your expression does not match the pattern //[delimiter]\\n[numbers...].");
+                        }
+
+                    }
+
+                    else
+                    {
+                        throw new IncorrectInput("your expression does not match the pattern //[delimiter]\\n[numbers...].");
+                    }
                 }
+                numbers=numbers.substring(2+SpecDelimiter.length()+count);
+                String[] Array_del= SpecDelimiter.split(",");
+                int[] DelLen = new int[SpecDelimiter.split(",").length];
+                for(int i = 0; i < Array_del.length; i++)
+                {
+                    DelLen[i]=Array_del[i].length();
+                }
+                Arrays.sort(DelLen);
+                for(int i = Array_del.length-1; i>=0; i--)
+                {
+                    for(String del: Array_del)
+                    {
+                        if(del.length()==DelLen[i])
+                        {
+                            numbers=numbers.replaceAll(Pattern.quote(del),",");
+                        }
+                    }
+                }
+
             }
             else
             {
@@ -55,6 +92,10 @@ public class StringCalculator {
         }
         if (numbers.contains("\n,") || numbers.contains(",\n"))
         {
+            if(check)
+            {
+                throw new IncorrectInput("your expression does not match the pattern //[delimiter]\\n[numbers...].");
+            }
             throw new IncorrectInput("you cannot enter mathematical expressions \\n, and ,\\n ");
         }
 
@@ -64,8 +105,11 @@ public class StringCalculator {
         for (String num : numberArray) {
             if (num.isEmpty())
             {
+                if(check)
+                {
+                    throw new IncorrectInput("your expression does not match the pattern //[delimiter]\\n[numbers...].");
+                }
                 throw new IncorrectInput("you cannot enter mathematical expression: "+copynumbers.replace("\n", "\\n"));
-
             }
             if (!num.matches("-?\\d+") )
             {

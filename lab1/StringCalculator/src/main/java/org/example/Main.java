@@ -7,7 +7,7 @@ import org.example.Calculator.StringCalculator;
 // then press Enter. You can now see whitespace characters in your code.
 public class Main {
     public static void main(String[] args) throws IncorrectInput {
-        String Line= "//[***]\n1***2***3";
+        String Line= "//[***][*][**]\n1***2**3*9";
         StringCalculator Object= new StringCalculator();
         System.out.println("Result: "+Object.add(Line));
 
