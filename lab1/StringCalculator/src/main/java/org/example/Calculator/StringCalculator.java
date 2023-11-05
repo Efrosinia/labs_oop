@@ -10,23 +10,48 @@ public class StringCalculator {
         StringBuilder Incorchars= new StringBuilder();
         StringBuilder NegativeNum= new StringBuilder();
         String delimiter="";
+        StringBuilder SpecDelimiter= new StringBuilder();
 
-        if (numbers.isEmpty() )
+        if(numbers.length()>5 && numbers.charAt(0)=='/' && numbers.charAt(1)=='/' && numbers.charAt(2)=='[' && numbers.contains("]"))
+        {
+            for (int i = 2; i < numbers.length(); i++)
+            {
+                if(numbers.charAt(i)==']')
+                    break;
+                if(numbers.charAt(i+1)!=']')
+                {
+                    SpecDelimiter.append(numbers.charAt(i + 1));
+                }
+                if(Character.isDigit(numbers.charAt(i)))
+                {
+                    throw new IncorrectInput("you cannot enter a delimiter that contains numbers. ");
+                }
+            }
+        }
+
+        if (numbers.isEmpty())
         {
             return 0;
         }
         if(numbers.charAt(0)=='/' && numbers.charAt(1)=='/')
         {
-            if (Character.isDigit(numbers.charAt(2)))
-            {
-                throw new IncorrectInput("the delimiter cannot be a number: the pattern //[delimiter]\\n[numbers...].");
-            }
-            if (numbers.charAt(3)!='\n')
+            if ((Character.isDigit(numbers.charAt(2)) || numbers.charAt(3)!='\n') && numbers.charAt(2)!='[')
             {
                 throw new IncorrectInput("your expression does not match the pattern //[delimiter]\\n[numbers...].");
             }
-            delimiter=String.valueOf(numbers.charAt(2));
-            numbers=numbers.substring(4);
+            if(numbers.charAt(2)=='[' && numbers.charAt(3+SpecDelimiter.length())==']' && numbers.charAt(4+SpecDelimiter.length())=='\n')
+            {
+                numbers=numbers.substring(5+SpecDelimiter.length());
+                if(!SpecDelimiter.isEmpty()) {
+                    numbers = numbers.replaceAll(Pattern.quote(SpecDelimiter.toString()), ",");
+                }
+            }
+            else
+            {
+                delimiter=String.valueOf(numbers.charAt(2));
+                numbers=numbers.substring(4);
+            }
+
         }
         if (numbers.contains("\n,") || numbers.contains(",\n"))
         {
